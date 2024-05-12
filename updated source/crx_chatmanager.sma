@@ -224,6 +224,7 @@ new g_eSettings[Settings],
 	Trie:g_tSettings,
 	bool:g_bFileWasRead,
 	bool:g_bRankSystem,
+	bool:g_bAdvMuteSystem,
 	bool:g_bSomethingExpired,
 	g_szFilename[PLATFORM_MAX_PATH],
 	g_fwdUserNameChanged,
@@ -289,6 +290,11 @@ public plugin_precache()
 	if(LibraryExists("crxranks", LibType_Library))
 	{
 		g_bRankSystem = true
+	}
+
+	if (LibraryExists("crx_advmute", LibType_Library) || is_plugin_loaded("crx_advmute", true) || is_plugin_loaded("Advanced Mute", false))
+	{
+		g_bAdvMuteSystem = true
 	}
 
 	_cm_on_file_read = CreateMultiForward("cm_on_file_read", ET_IGNORE, FP_CELL)
@@ -929,8 +935,10 @@ Handle_Message(id, szArgs[CC_MAX_MESSAGE_SIZE], bool:bTeam)
 
 send_chat_message(iIdTo, iIdFrom, const szMessage[], const szSound[])
 {
-	if (!crx_is_user_muted(iIdTo, iIdFrom))
-		CC_SendMatched(iIdTo, iIdFrom, szMessage)
+	if (g_bAdvMuteSystem && crx_is_user_muted(iIdTo, iIdFrom))
+		return
+
+	CC_SendMatched(iIdTo, iIdFrom, szMessage)
 
 	if(szSound[0])
 	{

@@ -199,6 +199,7 @@ public MuteMenu_Handler(id, iMenu, iItem)
 
 public plugin_natives()
 {
+	register_library("crx_advmute")
 	register_native("crx_is_user_muted", "_crx_is_user_muted")
 }
 
